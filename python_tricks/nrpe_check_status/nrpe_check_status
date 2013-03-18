@@ -1,0 +1,43 @@
+#!/usr/bin/python
+# used by nrpe/nagios to monitor daemon status
+# The status file located in /work/name/status has the format:
+#  retcode YYYY-MM-DD HH-MM-SS AM
+#  retcode is the standard bash return code 0==success
+
+import sys
+import os
+import sys
+
+import argparse
+
+parser = argparse.ArgumentParser(description="Check status files")
+
+#name is the name base directory  (/work/name/status/*)
+parser.add_argument('name')
+parser.add_argument('-V','--version',action='store_true',help="Version")
+
+#print parser.parse_args(['foo','-V'])
+#print parser.parse_args(['abc','--version'])
+#print parser.parse_args(['myname'])
+args = parser.parse_args()
+path = "/work/"+args.name+"/status"
+
+stat_return = 0
+
+listing = os.listdir(path)
+msg = ""
+for i in listing:
+    with open(path+"/"+i,'r') as f:
+        data = f.read()
+	msg=msg+i+":  "+data.strip()+", "
+        status = data.split()[0]
+        if status != '0':
+            stat_return = 2
+print msg
+
+sys.exit(stat_return)
+
+
+
+
+
