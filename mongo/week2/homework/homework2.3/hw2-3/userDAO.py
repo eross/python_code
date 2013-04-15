@@ -53,6 +53,7 @@ class UserDAO:
 
         user = None
         try:
+            user = self.users.find_one({'_id': username},safe = True)
             # XXX HW 2.3 Students Work Here
             # you will need to retrieve right document from the users collection.
             print "This space intentionally left blank."
@@ -82,9 +83,7 @@ class UserDAO:
             user['email'] = email
 
         try:
-            # XXX HW 2.3 Students work here
-            # You need to insert the user into the users collection.
-            # Don't over think this one, it's a straight forward insert.
+            self.users.insert(user,safe=True)
 
             print "This space intentionally left blank."
 
