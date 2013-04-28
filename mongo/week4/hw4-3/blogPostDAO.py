@@ -21,6 +21,8 @@ __author__ = 'aje'
 import sys
 import re
 import datetime
+import pymongo
+from pprint import pprint
 
 
 
@@ -64,7 +66,8 @@ class BlogPostDAO:
 
     # returns an array of num_posts posts, reverse ordered
     def get_posts(self, num_posts):
-
+        # explain = self.posts.find().sort('date', direction=-1).limit(num_posts).explain()
+        # pprint(explain)
         cursor = self.posts.find().sort('date', direction=-1).limit(num_posts)
         l = []
 
@@ -85,7 +88,7 @@ class BlogPostDAO:
 
     # returns an array of num_posts posts, reverse ordered, filtered by tag
     def get_posts_by_tag(self, tag, num_posts):
-
+        pprint(self.posts.find({'tags':tag}).sort('date', direction=-1).limit(num_posts).explain())
         cursor = self.posts.find({'tags':tag}).sort('date', direction=-1).limit(num_posts)
         l = []
 
@@ -106,7 +109,7 @@ class BlogPostDAO:
 
     # find a post corresponding to a particular permalink
     def get_post_by_permalink(self, permalink):
-
+        # pprint(self.posts.find({'permalink': permalink}).explain())
         post = self.posts.find_one({'permalink': permalink})
 
         if post is not None:
