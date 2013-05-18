@@ -1,0 +1,76 @@
+{
+			"_id" : ObjectId("4f16fc97d1e2d32371003f3a"),
+			"body" : "some text",
+			"filename" : "1038.",
+			"headers" : {
+				"Content-Transfer-Encoding" : "7bit",
+				"Content-Type" : "text/plain; charset=ANSI_X3.4-1968",
+				"Date" : ISODate("2001-04-09T16:04:00Z"),
+				"From" : "eric.bass@enron.com",
+				"Message-ID" : "<4479085.1075854772077.JavaMail.evans@thyme>",
+				"Mime-Version" : "1.0",
+				"Subject" : "Fw: BASS REUNION 2001",
+				"To" : "shanna.husser@enron.com",
+				"X-FileName" : "ebass.nsf",
+				"X-Folder" : "\\Eric_Bass_Jun2001\\Notes Folders\\Sent",
+				"X-From" : "Eric Bass",
+				"X-Origin" : "Bass-E",
+				"X-To" : "Shanna Husser",
+				"X-bcc" : "",
+				"X-cc" : ""
+			},
+			"mailbox" : "bass-e",
+			"subFolder" : "sent"
+		}
+	],
+	"ok" : 1
+}
+
+
+
+
+#2
+
+db.messages.aggregate([{$unwind: "$headers.To"},{$project: {_id: 0,from: "$headers.From",to: "$headers.To"}},{$limit:10}])
+
+db.messages.aggregate([{$unwind: "$headers.To"},{$project: {_id: 0,from: "$headers.From",to: "$headers.To"}},{$group:{_id: {from: "$from"}, count: {$sum: 1}}}])
+
+db.messages.aggregate([{$project: {_id: 0,from: "$headers.From",to: "$headers.To"}},
+{$unwind: "$headers.To"},
+{$group:{_id: {from: "$from",to: "$to"}, 
+count: {$sum: 1}}},{$sort: {count: 1}}])
+
+db.messages.aggregate([
+{$project: {_id: 1,from: "$headers.From",to: "$headers.To"}},
+{$match: {from: "susan.mara@enron.com"}},
+{$unwind: "$to"},
+{$group: {_id: {_id: "$_id", from: "$from"},to: {$addToSet: "$to"}}},
+{$project: {_id: 0, from: "$_id.from", to: "$to"}},
+{$unwind: "$to"},
+{$group: {_id: {from: "$from",to: "$to"}, count: {$sum: 1}}},
+{$sort: {count: -1}},
+{$limit: 40},
+])
+
+db.messages.aggregate([
+{$project: {_id: 0,from: "$headers.From",to: "$headers.To"}},
+{$unwind : "$to"},
+{$group: {_id: "$from", to : {$addToSet: "$to"}}},
+{$unwind: "$to"},
+{$group: {_id: {from: "$_id",to: "$to"}, count: {$sum: 1}}},
+{$sort: {count: -1}},
+{$limit: 40},
+])
+
+
+FINAL ANSWER FOR Q2...
+db.messages.aggregate([
+{$project: {_id: 1,from: "$headers.From",to: "$headers.To"}},
+{$unwind: "$to"},
+{$group: {_id: {_id: "$_id", from: "$from"},to: {$addToSet: "$to"}}},
+{$project: {_id: 0, from: "$_id.from", to: "$to"}},
+{$unwind: "$to"},
+{$group: {_id: {from: "$from",to: "$to"}, count: {$sum: 1}}},
+{$sort: {count: -1}},
+{$limit: 40},
+])
