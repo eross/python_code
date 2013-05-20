@@ -1,0 +1,26 @@
+db.zips.aggregate([{$match: {state: {$in: ["CT","NJ"]}}},{$group: {_id: "$city",pop: {$avg: "$pop"}}}])
+
+db.zips.aggregate([{$match: {state: {$in: ["CT","NJ"]}}},{$group: {_id: "$city",p: {$avg: "$pop"}}},{$group:{_id: "a",av: {$avg: "$p"}}}])
+
+db.zips.aggregate([{$match: {state: {$in: ["CT","NJ"]}}},{$group: {_id: "$city",pop: {$sum: "$pop"}}},{$sort: {_id: 1}}])
+
+db.zips.aggregate([{$match: {state: {$in: ["CT","NJ"]}}},{$group: {_id: "$city",pop: {$sum: "$pop"}}},{$group: {_id: "all", a: {$avg: "$pop"}}},{$sort: {_id: 1}}])
+
+db.zips.aggregate([{$match: {state: {$in: ["CT","NJ"]},pop: {$gt: 25000}}},{$group: {_id: "$city",pop: {$sum: "$pop"}}},{$sort: {_id: 1}}])
+
+db.zips.aggregate([{$match: {state: {$in: ["CT","NJ"]}}},{$group: {_id: "$city",pop: {$sum: "$pop"}}},{$match: {pop: {$gt: 25000}}},{$sort: {_id: 1}}])
+
+db.zips.aggregate([{$match: {state: {$in: ["CT","NJ"]}}},{$group: {_id: "$city",pop: {$sum: "$pop"}}},{$match: {pop: {$gt: 25000}}},{$group: {_id: "all", a: {$avg: "$pop"}}},{$sort: {_id: 1}}])
+
+
+Final:  close but not exact...
+
+db.zips.aggregate([{$match: {state: {$in: ["CA","NY"]}}},{$group: {_id: "$city",pp: {$sum: "$pop"}}},{$match: {pp: {$gt: 25000}}},{$group: {_id: "all", a: {$avg: "$pp"}}},{$sort: {_id: 1}}])
+
+db.grades.aggregate([{$unwind: "$scores"},{$match: {"scores.type": {$in: ["homework","exam"]}}},{$group: {_id: {student: "$student_id",class: "$class_id"}, avg: {$avg: "$scores.score"}}},{$sort: {"_id.student":1}}])
+
+db.grades.aggregate([{$unwind: "$scores"},{$match: {"scores.type": {$in: ["homework","exam"]}}},{$group: {_id: {student: "$student_id",class: "$class_id"}, avg: {$avg: "$scores.score"}}},{$group: {_id: "$_id.class", avg: {$avg: "$avg"}}}])
+
+Final:
+
+db.grades.aggregate([{$unwind: "$scores"},{$match: {"scores.type": {$in: ["homework","exam"]}}},{$group: {_id: {student: "$student_id",class: "$class_id"}, avg: {$avg: "$scores.score"}}},{$group: {_id: "$_id.class", avg: {$avg: "$avg"}}},{$sort: {avg: 1}}])
